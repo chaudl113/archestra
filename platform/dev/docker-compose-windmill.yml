@@ -1,0 +1,76 @@
+services:
+  archestra:
+    image: archestra/platform
+    restart: always
+    ports:
+      - "9000:9000"
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:archestra_dev_password@archestra-db:5432/archestra
+    volumes:
+      - archestra_data:/app/data
+    depends_on:
+      - archestra-db
+
+  archestra-db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=archestra_dev_password
+      - POSTGRES_DB=archestra
+    volumes:
+      - archestra_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  windmill-server:
+    image: ghcr.io/windmill-labs/windmill:latest
+    restart: always
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - DATABASE_URL=postgres://postgres:windmill_password@windmill-db/windmill?sslmode=disable
+      - BASE_URL=http://localhost:8000
+      - RUST_LOG=info
+    depends_on:
+      - windmill-db
+    volumes:
+      - windmill_data:/data
+
+  windmill-worker:
+    image: ghcr.io/windmill-labs/windmill:latest
+    restart: always
+    environment:
+      - DATABASE_URL=postgres://postgres:windmill_password@windmill-db/windmill?sslmode=disable
+      - MODE=worker
+      - WORKER_GROUP=default
+    depends_on:
+      - windmill-db
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - windmill_data:/data
+
+  windmill-lsp:
+    image: ghcr.io/windmill-labs/windmill-lsp:latest
+    restart: always
+    ports:
+      - "127.0.0.1:3001:3001"
+
+  windmill-db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=windmill_password
+      - POSTGRES_DB=windmill
+    volumes:
+      - windmill_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+volumes:
+  archestra_data:
+  archestra_postgres_data:
+  windmill_data:
+  windmill_postgres_data:
