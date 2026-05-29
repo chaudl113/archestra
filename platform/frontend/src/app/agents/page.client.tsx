@@ -2,7 +2,8 @@
 
 import { type AgentType, type archestraApiTypes, E2eTestId } from "@shared";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp, Plus, Upload } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Sparkles, Upload } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -487,6 +488,12 @@ function Agents({ initialData }: { initialData?: AgentsInitialData }) {
         }
         actionButton={
           <div className="flex gap-2">
+            <Link href="/agents/templates">
+              <Button variant="outline" size="sm">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Templates
+              </Button>
+            </Link>
             <PermissionButton
               variant="outline"
               permissions={{ agent: ["create"] }}

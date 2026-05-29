@@ -1,4 +1,8 @@
 export const RouteId = {
+  // Agent Template Routes
+  GetAgentTemplates: "getAgentTemplates",
+  CreateAgentFromTemplate: "createAgentFromTemplate",
+
   // Agent Routes
   GetAgents: "getAgents",
   GetAllAgents: "getAllAgents",

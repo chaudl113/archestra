@@ -2,6 +2,7 @@ export { default as browserStreamRoutes } from "@/features/browser-stream/routes
 export { default as a2aRoutes } from "./a2a";
 export { default as a2aV2Routes } from "./a2a-v2";
 export { default as agentRoutes } from "./agent";
+export { default as agentTemplateRoutes } from "./agent-template";
 export { default as agentToolRoutes } from "./agent-tool";
 export { default as apiKeyRoutes } from "./api-key";
 export { default as archestraCatalogProxyRoutes } from "./archestra-catalog-proxy";
