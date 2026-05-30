@@ -60,6 +60,10 @@ import { VirtualKeySearchableSelect } from "@/components/virtual-key-searchable-
 import { useProfiles } from "@/lib/agent.query";
 import { useDataTableQueryParams } from "@/lib/hooks/use-data-table-query-params";
 import {
+  type CleanupInterval,
+  useResetsInCountdown,
+} from "@/lib/resets-in-countdown";
+import {
   useCreateLimit,
   useDeleteLimit,
   useLimits,
@@ -89,6 +93,24 @@ type LimitFormState = {
   models: string[];
   isAllModels: boolean;
 };
+
+/** Wrapper component for the countdown badge that uses the hook */
+function ResetsInBadge({
+  lastCleanup,
+  createdAt,
+  cleanupInterval,
+}: {
+  lastCleanup: Date | null | undefined;
+  createdAt: Date | string;
+  cleanupInterval: CleanupInterval;
+}) {
+  const countdown = useResetsInCountdown(lastCleanup, createdAt, cleanupInterval);
+  return (
+    <Badge variant="outline" className="text-xs font-normal text-muted-foreground">
+      {countdown}
+    </Badge>
+  );
+}
 
 const DEFAULT_FORM_STATE: LimitFormState = {
   entityType: "organization",
@@ -487,13 +509,22 @@ export default function LimitsPage() {
       {
         accessorKey: "cleanupInterval",
         header: "Cleanup",
-        size: 140,
-        minSize: 120,
+        size: 180,
+        minSize: 150,
         cell: ({ row }) => {
           const cleanupInterval =
             (row.original.cleanupInterval as LimitCleanupInterval | null) ??
             DEFAULT_LIMIT_CLEANUP_INTERVAL;
-          return CLEANUP_INTERVAL_LABELS[cleanupInterval];
+          return (
+            <div className="flex flex-col gap-1">
+              <span>{CLEANUP_INTERVAL_LABELS[cleanupInterval]}</span>
+              <ResetsInBadge
+                lastCleanup={row.original.lastCleanup}
+                createdAt={row.original.createdAt}
+                cleanupInterval={cleanupInterval as CleanupInterval}
+              />
+            </div>
+          );
         },
       },
       {
