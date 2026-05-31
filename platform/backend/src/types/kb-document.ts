@@ -61,7 +61,7 @@ export const UpdateKbDocumentSchema = createUpdateSchema(
     acl: z.array(AclEntrySchema).optional(),
     metadata: KbDocumentMetadataSchema.optional(),
   },
-).pick({
+}).pick({
   title: true,
   content: true,
   contentHash: true,
@@ -69,6 +69,7 @@ export const UpdateKbDocumentSchema = createUpdateSchema(
   acl: true,
   metadata: true,
   embeddingStatus: true,
+  embeddingError: true,
   chunkCount: true,
 });
 

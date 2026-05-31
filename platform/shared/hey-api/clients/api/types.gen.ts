@@ -33391,6 +33391,7 @@ export type GetConnectorDocumentsResponses = {
                 [key: string]: unknown;
             } | null;
             embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+            embeddingError?: string | null;
             chunkCount: number;
             createdAt: string;
             updatedAt: string;
@@ -33588,6 +33589,7 @@ export type GetConnectorDocumentResponses = {
             [key: string]: unknown;
         } | null;
         embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+            embeddingError?: string | null;
         chunkCount: number;
         createdAt: string;
         updatedAt: string;
@@ -34519,6 +34521,7 @@ export type GetKnowledgeFilesResponses = {
             processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
             processingError: string | null;
             embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+            embeddingError?: string | null;
             assignedAgents: Array<{
                 id: string;
                 name: string;
@@ -34812,6 +34815,7 @@ export type GetKnowledgeFileResponses = {
         processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
         processingError: string | null;
         embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+            embeddingError?: string | null;
         assignedAgents: Array<{
             id: string;
             name: string;
@@ -34919,6 +34923,7 @@ export type UpdateKnowledgeFileResponses = {
         processingStatus: 'pending' | 'processing' | 'completed' | 'failed';
         processingError: string | null;
         embeddingStatus: 'pending' | 'processing' | 'completed' | 'failed';
+            embeddingError?: string | null;
         assignedAgents: Array<{
             id: string;
             name: string;

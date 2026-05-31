@@ -39,6 +39,12 @@ import { DataTable } from "@/components/ui/data-table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TruncatedTooltip } from "@/components/ui/truncated-tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DEFAULT_TABLE_LIMIT } from "@/consts";
 import {
   formatFileSize,
@@ -490,7 +496,7 @@ function FileStatusBadge({ file }: { file: KnowledgeFile }) {
         : file.processingStatus === "failed"
           ? "Failed"
           : "Queued";
-    return (
+    const badge = (
       <Badge
         variant={
           file.processingStatus === "failed" ? "destructive" : "secondary"
@@ -503,9 +509,28 @@ function FileStatusBadge({ file }: { file: KnowledgeFile }) {
         {label}
       </Badge>
     );
+
+    if (file.processingStatus === "failed" && file.processingError) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>{badge}</TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs">
+              {file.processingError}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+
+    return badge;
   }
 
-  return (
+  const embeddingLabel =
+    file.embeddingStatus === "completed"
+      ? "Indexed"
+      : file.embeddingStatus;
+  const embeddingBadge = (
     <Badge
       variant={file.embeddingStatus === "failed" ? "destructive" : "secondary"}
       className="text-xs"
@@ -513,9 +538,24 @@ function FileStatusBadge({ file }: { file: KnowledgeFile }) {
       {file.embeddingStatus === "processing" && (
         <Loader2 className="h-3 w-3 animate-spin" />
       )}
-      {file.embeddingStatus === "completed" ? "Indexed" : file.embeddingStatus}
+      {embeddingLabel}
     </Badge>
   );
+
+  if (file.embeddingStatus === "failed" && file.embeddingError) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{embeddingBadge}</TooltipTrigger>
+          <TooltipContent side="top" className="max-w-xs">
+            {file.embeddingError}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return embeddingBadge;
 }
 
 function VisibilityBadge({ file }: { file: KnowledgeFile }) {

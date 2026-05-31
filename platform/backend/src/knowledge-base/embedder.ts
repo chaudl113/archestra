@@ -18,6 +18,44 @@ import {
   getDefaultOrgEmbeddingConfig,
 } from "./kb-llm-client";
 
+/**
+ * Categorize embedding errors into human-readable messages.
+ */
+function categorizeEmbeddingError(error: unknown): string {
+  const msg = error instanceof Error ? error.message : String(error);
+  const lower = msg.toLowerCase();
+
+  if (lower.includes("rate limit") || lower.includes("429")) {
+    return "Rate limit exceeded — please try again later";
+  }
+  if (
+    lower.includes("401") ||
+    lower.includes("403") ||
+    lower.includes("unauthorized") ||
+    lower.includes("invalid api key") ||
+    lower.includes("authentication")
+  ) {
+    return "API key error — check your LLM provider credentials";
+  }
+  if (
+    lower.includes("model") &&
+    (lower.includes("not found") || lower.includes("does not exist"))
+  ) {
+    return "Model not found — check your embedding model configuration";
+  }
+  if (lower.includes("500") || lower.includes("502") || lower.includes("503") || lower.includes("504")) {
+    return "Provider server error — please try again later";
+  }
+  if (
+    lower.includes("dimension") ||
+    lower.includes("dimensions") ||
+    lower.includes("embedding size")
+  ) {
+    return "Embedding dimensions mismatch — check your model configuration";
+  }
+  return "Unknown embedding error";
+}
+
 const RETRY_MAX_ATTEMPTS = 3;
 const RETRY_BASE_DELAY_MS = 1000;
 
@@ -91,6 +129,7 @@ class EmbeddingService {
     } catch (error) {
       await KbDocumentModel.update(documentId, {
         embeddingStatus: "failed",
+        embeddingError: categorizeEmbeddingError(error),
       });
       logger.error(
         {
@@ -240,6 +279,7 @@ class EmbeddingService {
       if (anyFailed) {
         await KbDocumentModel.update(documentId, {
           embeddingStatus: "failed",
+          embeddingError: "Embedding failed — check logs for details",
         });
         logger.error(
           { documentId, runId: connectorRunId },
